@@ -1,0 +1,14 @@
+{
+  "name": "@fep/core",
+  "version": "1.0.0",
+  "description": "Faculty Excellence Platform — Core Scoring Engine",
+  "author": "Dr. Salma Elnour Rahma Mohamed",
+  "license": "SEE LICENSE IN LICENSE",
+  "main": "src/index.js",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./scoring": "./src/scoringEngine.js",
+    "./config": "./src/configParser.js"
+  }
+}

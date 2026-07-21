@@ -1,0 +1,44 @@
+{
+  "_meta": {
+    "schema_version": "1.0.0",
+    "config_version": "1.0.0",
+    "institution_id": "gmu",
+    "created_by": "Dr. Salma Elnour Rahma Mohamed",
+    "created_at": "2026-07-01",
+    "description": "Default GMU configuration — Faculty Excellence Platform"
+  },
+  "institution": {
+    "name": "Gulf Medical University",
+    "short_name": "GMU",
+    "subdomain": "gmu",
+    "country": "UAE",
+    "city": "Ajman",
+    "type": "university",
+    "website": "https://gmu.ac.ae",
+    "accreditation_bodies": ["CAA", "WFME"],
+    "branding": {
+      "primary": "#0D2B5E",
+      "accent": "#1A7B8C",
+      "gold": "#C9982A",
+      "background": "#F5F6FA",
+      "text": "#1A1A1A"
+    }
+  },
+  "framework": {
+    "name": "GMU Faculty Competency Framework",
+    "short_name": "GMU-FCF",
+    "version": "1.0",
+    "total_domains": 9
+  },
+  "policy": {
+    "appraisal_linked": false,
+    "idp_approval_required": true,
+    "idp_approval_by": "supervisor",
+    "reassessment_cycle_years": 2,
+    "promotion_criteria_linked": true,
+    "portfolio_ownership": "faculty",
+    "portfolio_institution_access": "view_export",
+    "mandatory_participation": true,
+    "minimum_cpd_credits_per_year": 20
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "faculty-excellence-platform",
+  "version": "1.0.0",
+  "description": "Competency-driven. Evidence-informed. Built for HPE.",
+  "author": {
+    "name": "Dr. Salma Elnour Rahma Mohamed",
+    "email": "dr.salmaelnour@gmu.ac.ae",
+    "url": "https://orcid.org/0000-0001-6439-5062"
+  },
+  "license": "SEE LICENSE IN LICENSE",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=apps/web",
+    "build": "npm run build --workspace=apps/web",
+    "test": "npm test --workspaces"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/salmaelnour757-coder/faculty-excellence-platform"
+  }
+}
