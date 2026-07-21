@@ -1,0 +1,29 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy:   #0D2B5E;
+  --teal:   #1A7B8C;
+  --gold:   #C9982A;
+  --bg:     #F2F5FA;
+  --white:  #FFFFFF;
+  --ink:    #1A1A2E;
+  --muted:  #64748B;
+  --border: #DDE3EF;
+  --red:    #EF4444;
+  --orange: #F97316;
+  --amber:  #F59E0B;
+  --green:  #22C55E;
+  --radius: 10px;
+  --shadow: 0 2px 12px rgba(13,43,94,.08);
+}
+
+html, body, #root {
+  height: 100%;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  font-size: 14px;
+  color: var(--ink);
+  background: var(--bg);
+}
+
+button { font-family: inherit; cursor: pointer; }
+input, select, textarea { font-family: inherit; }
