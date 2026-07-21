@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { supabase } from './supabase'
+import { supabase } from '../supabase'
 import Auth from './components/Auth'
 import Shell from './components/Shell'
 import Onboarding from './components/Onboarding'
