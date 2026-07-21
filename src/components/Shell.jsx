@@ -7,8 +7,9 @@ import IDP from './IDP'
 import Portfolio from './Portfolio'
 import Pathways from './Pathways'
 import InviteFaculty from './InviteFaculty'
+import Settings from './Settings'
 
-export default function Shell({ currentUser, institution }) {
+export default function Shell({ currentUser, institution, onInstitutionUpdate }) {
   const [screen, setScreen] = useState('admin-dashboard')
   const [isAdmin, setIsAdmin] = useState(true)
 
@@ -40,32 +41,75 @@ export default function Shell({ currentUser, institution }) {
   const nav = isAdmin ? adminNav : facultyNav
 
   const screenMap = {
-    'admin-dashboard':   <AdminDashboard institution={institution} currentUser={currentUser} branding={branding} />,
-    'admin-faculty':     <Placeholder title="Faculty Management" icon="👥" desc="Manage all faculty accounts, roles, and profiles." />,
-    'admin-invite':      <InviteFaculty institution={institution} currentUser={currentUser} onClose={() => setScreen('admin-dashboard')} onInvited={() => setScreen('admin-dashboard')} />,
-    'admin-analytics':   <Placeholder title="Analytics" icon="📈" desc="Competency gap analysis and programme performance across the institution." />,
-    'admin-pathways':    <Placeholder title="Pathway Management" icon="🎓" desc="Configure faculty development programmes, modules, and sessions." />,
-    'admin-settings':    <Placeholder title="Settings" icon="⚙️" desc="Institution configuration, branding, framework editor, and policies." />,
-    'faculty-dashboard': <FacultyDashboard institution={institution} currentUser={currentUser} branding={branding} setScreen={setScreen} />,
-    'assessment':        <Assessment institution={institution} currentUser={currentUser} setScreen={setScreen} />,
-    'idp':               <IDP institution={institution} currentUser={currentUser} setScreen={setScreen} />,
-    'portfolio':         <Portfolio institution={institution} currentUser={currentUser} />,
-    'pathways':          <Pathways institution={institution} currentUser={currentUser} />,
+    'admin-dashboard':   <AdminDashboard
+                           institution={institution}
+                           currentUser={currentUser}
+                           branding={branding} />,
+    'admin-faculty':     <Placeholder
+                           title="Faculty Management"
+                           icon="👥"
+                           desc="Manage all faculty accounts, roles, and profiles." />,
+    'admin-invite':      <InviteFaculty
+                           institution={institution}
+                           currentUser={currentUser}
+                           onClose={() => setScreen('admin-dashboard')}
+                           onInvited={() => setScreen('admin-dashboard')} />,
+    'admin-analytics':   <Placeholder
+                           title="Analytics"
+                           icon="📈"
+                           desc="Competency gap analysis and programme performance." />,
+    'admin-pathways':    <Placeholder
+                           title="Pathway Management"
+                           icon="🎓"
+                           desc="Configure faculty development programmes and sessions." />,
+    'admin-settings':    <Settings
+                           institution={institution}
+                           currentUser={currentUser}
+                           onUpdate={onInstitutionUpdate} />,
+    'faculty-dashboard': <FacultyDashboard
+                           institution={institution}
+                           currentUser={currentUser}
+                           branding={branding}
+                           setScreen={setScreen} />,
+    'assessment':        <Assessment
+                           institution={institution}
+                           currentUser={currentUser}
+                           setScreen={setScreen} />,
+    'idp':               <IDP
+                           institution={institution}
+                           currentUser={currentUser}
+                           setScreen={setScreen} />,
+    'portfolio':         <Portfolio
+                           institution={institution}
+                           currentUser={currentUser} />,
+    'pathways':          <Pathways
+                           institution={institution}
+                           currentUser={currentUser} />,
   }
+
+  const currentNavItem = [...adminNav, ...facultyNav].find(n => n.id === screen)
 
   const initials = currentUser?.full_name
     ? currentUser.full_name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
     : 'ME'
 
-  const currentNavItem = [...adminNav, ...facultyNav].find(n => n.id === screen)
+  const roleLabel = {
+    admin:            'Administrator',
+    dean:             'Dean',
+    quality_director: 'Quality Director',
+    program_director: 'Program Director',
+    chair:            'Department Chair',
+    supervisor:       'Supervisor',
+    faculty:          currentUser?.rank || 'Faculty',
+  }
 
   return (
     <div style={{
-      display: 'flex', height: '100vh', overflow: 'hidden',
-      fontFamily: 'Arial, sans-serif'
+      display: 'flex', height: '100vh',
+      overflow: 'hidden', fontFamily: 'Arial, sans-serif'
     }}>
 
-      {/* ── Sidebar ─────────────────────────────────────────────────── */}
+      {/* ── Sidebar ──────────────────────────────────────────────────── */}
       <div style={{
         width: 240, flexShrink: 0,
         background: branding.primary,
@@ -78,18 +122,26 @@ export default function Shell({ currentUser, institution }) {
           padding: '20px 18px 16px',
           borderBottom: '1px solid rgba(255,255,255,.08)'
         }}>
-          <div style={{ fontSize: 14, fontWeight: 700, color: 'white', lineHeight: 1.2 }}>
+          <div style={{
+            fontSize: 14, fontWeight: 700,
+            color: 'white', lineHeight: 1.3
+          }}>
             {institution?.name || 'Faculty Excellence Platform'}
           </div>
-          <div style={{ fontSize: 11, color: 'rgba(255,255,255,.4)', marginTop: 3 }}>
+          <div style={{
+            fontSize: 11,
+            color: 'rgba(255,255,255,.4)',
+            marginTop: 3
+          }}>
             Faculty Excellence Platform
           </div>
         </div>
 
-        {/* Nav section label */}
+        {/* Section label */}
         <div style={{ padding: '14px 18px 4px' }}>
           <div style={{
-            fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,.3)',
+            fontSize: 10, fontWeight: 700,
+            color: 'rgba(255,255,255,.3)',
             letterSpacing: 1, textTransform: 'uppercase'
           }}>
             {isAdmin ? 'Administration' : 'My Development'}
@@ -97,7 +149,10 @@ export default function Shell({ currentUser, institution }) {
         </div>
 
         {/* Nav items */}
-        <div style={{ padding: '4px 10px', flex: 1, overflowY: 'auto' }}>
+        <div style={{
+          padding: '4px 10px',
+          flex: 1, overflowY: 'auto'
+        }}>
           {nav.map(item => (
             <button key={item.id}
               onClick={() => setScreen(item.id)}
@@ -106,11 +161,17 @@ export default function Shell({ currentUser, institution }) {
                 width: '100%', padding: '9px 10px', borderRadius: 8,
                 border: 'none', cursor: 'pointer', textAlign: 'left',
                 fontSize: 13.5, fontWeight: 500, marginBottom: 2,
-                background: screen === item.id ? branding.accent : 'transparent',
-                color: screen === item.id ? 'white' : 'rgba(255,255,255,.65)',
+                background: screen === item.id
+                  ? branding.accent
+                  : 'transparent',
+                color: screen === item.id
+                  ? 'white'
+                  : 'rgba(255,255,255,.65)',
                 transition: 'all .15s'
               }}>
-              <span style={{ fontSize: 16, width: 20, textAlign: 'center' }}>
+              <span style={{
+                fontSize: 16, width: 20, textAlign: 'center'
+              }}>
                 {item.icon}
               </span>
               {item.label}
@@ -124,50 +185,57 @@ export default function Shell({ currentUser, institution }) {
           borderTop: '1px solid rgba(255,255,255,.08)'
         }}>
 
-          {/* Switch view button */}
+          {/* Switch view */}
           <button
             onClick={() => {
               setIsAdmin(!isAdmin)
               setScreen(isAdmin ? 'faculty-dashboard' : 'admin-dashboard')
             }}
             style={{
-              width: '100%', padding: '8px 12px', borderRadius: 8,
-              marginBottom: 10, border: '1px solid rgba(255,255,255,.15)',
-              background: 'transparent', color: 'rgba(255,255,255,.6)',
-              fontSize: 12, fontWeight: 600, cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6
+              width: '100%', padding: '8px 12px',
+              borderRadius: 8, marginBottom: 10,
+              border: '1px solid rgba(255,255,255,.15)',
+              background: 'transparent',
+              color: 'rgba(255,255,255,.6)',
+              fontSize: 12, fontWeight: 600,
+              cursor: 'pointer',
+              display: 'flex', alignItems: 'center',
+              justifyContent: 'center', gap: 6
             }}>
-            {isAdmin ? '👤 Switch to Faculty View' : '🔧 Switch to Admin View'}
+            {isAdmin
+              ? '👤 Switch to Faculty View'
+              : '🔧 Switch to Admin View'}
           </button>
 
           {/* User chip */}
           <div style={{
-            display: 'flex', alignItems: 'center', gap: 10,
-            padding: '6px 8px'
+            display: 'flex', alignItems: 'center',
+            gap: 10, padding: '6px 8px'
           }}>
             <div style={{
-              width: 34, height: 34, borderRadius: '50%', flexShrink: 0,
-              background: branding.gold, color: branding.primary,
+              width: 34, height: 34, borderRadius: '50%',
+              flexShrink: 0,
+              background: branding.gold,
+              color: branding.primary,
               fontWeight: 700, fontSize: 13,
-              display: 'flex', alignItems: 'center', justifyContent: 'center'
+              display: 'flex', alignItems: 'center',
+              justifyContent: 'center'
             }}>
               {initials}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{
                 fontSize: 13, fontWeight: 600, color: 'white',
-                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
+                overflow: 'hidden', textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap'
               }}>
                 {currentUser?.full_name || 'User'}
               </div>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,.4)' }}>
-                {currentUser?.role === 'admin'            ? 'Administrator'
-               : currentUser?.role === 'dean'             ? 'Dean'
-               : currentUser?.role === 'quality_director' ? 'Quality Director'
-               : currentUser?.role === 'program_director' ? 'Program Director'
-               : currentUser?.role === 'chair'            ? 'Department Chair'
-               : currentUser?.role === 'supervisor'       ? 'Supervisor'
-               : currentUser?.rank || 'Faculty'}
+              <div style={{
+                fontSize: 11,
+                color: 'rgba(255,255,255,.4)'
+              }}>
+                {roleLabel[currentUser?.role] || 'Faculty'}
               </div>
             </div>
             <button
@@ -184,8 +252,11 @@ export default function Shell({ currentUser, institution }) {
         </div>
       </div>
 
-      {/* ── Main area ────────────────────────────────────────────────── */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      {/* ── Main ─────────────────────────────────────────────────────── */}
+      <div style={{
+        flex: 1, display: 'flex',
+        flexDirection: 'column', overflow: 'hidden'
+      }}>
 
         {/* Topbar */}
         <div style={{
@@ -195,26 +266,28 @@ export default function Shell({ currentUser, institution }) {
           padding: '0 24px', gap: 14, flexShrink: 0
         }}>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 17, fontWeight: 700, color: '#0D2B5E' }}>
-              {currentNavItem?.icon} {currentNavItem?.label || 'Faculty Excellence Platform'}
+            <div style={{
+              fontSize: 17, fontWeight: 700, color: '#0D2B5E'
+            }}>
+              {currentNavItem?.icon}{' '}
+              {currentNavItem?.label || 'Faculty Excellence Platform'}
             </div>
           </div>
 
-          {/* Topbar actions */}
-          <div style={{ display: 'flex', gap: 8 }}>
-            {isAdmin && screen !== 'admin-invite' && (
-              <button
-                onClick={() => setScreen('admin-invite')}
-                style={{
-                  padding: '8px 16px', borderRadius: 8, border: 'none',
-                  background: '#0D2B5E', color: 'white',
-                  fontWeight: 600, fontSize: 13, cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', gap: 6
-                }}>
-                ✉️ Invite Faculty
-              </button>
-            )}
-          </div>
+          {/* Invite button in topbar */}
+          {isAdmin && screen !== 'admin-invite' && (
+            <button
+              onClick={() => setScreen('admin-invite')}
+              style={{
+                padding: '8px 16px', borderRadius: 8,
+                border: 'none', background: branding.primary,
+                color: 'white', fontWeight: 600,
+                fontSize: 13, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: 6
+              }}>
+              ✉️ Invite Faculty
+            </button>
+          )}
 
           <div style={{ fontSize: 13, color: '#64748B' }}>
             {new Date().toLocaleDateString('en-GB', {
@@ -224,7 +297,7 @@ export default function Shell({ currentUser, institution }) {
           </div>
         </div>
 
-        {/* Content */}
+        {/* Content area */}
         <div style={{
           flex: 1, overflowY: 'auto',
           padding: 24, background: '#F2F5FA'
@@ -241,11 +314,16 @@ export default function Shell({ currentUser, institution }) {
 function Placeholder({ title, icon, desc }) {
   return (
     <div style={{
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      height: '60vh', flexDirection: 'column', gap: 12, textAlign: 'center'
+      display: 'flex', alignItems: 'center',
+      justifyContent: 'center', height: '60vh',
+      flexDirection: 'column', gap: 12, textAlign: 'center'
     }}>
       <div style={{ fontSize: 52 }}>{icon}</div>
-      <div style={{ fontSize: 20, fontWeight: 700, color: '#0D2B5E' }}>{title}</div>
+      <div style={{
+        fontSize: 20, fontWeight: 700, color: '#0D2B5E'
+      }}>
+        {title}
+      </div>
       <div style={{ color: '#64748B', maxWidth: 400 }}>{desc}</div>
     </div>
   )
