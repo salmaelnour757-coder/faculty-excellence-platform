@@ -116,6 +116,51 @@ export default function Assessment({ institution, currentUser, setScreen }) {
 
       if (!importance || !competence || !priority) continue
 
+      // Check if response already exists
+      const { data: existing } = await supabase
+        .from('responses')
+        .select('id')
+        .eq('user_id', currentUser.id)
+        .eq('item_id', item.id)
+        .eq('cycle_id', cycleId)
+        .single()
+
+      if (existing) {
+        // Update existing response
+        await supabase
+          .from('responses')
+          .update({ importance, competence, priority })
+          .eq('id', existing.id)
+      } else {
+        // Insert new response
+        await supabase
+          .from('responses')
+          .insert({
+            user_id:        currentUser.id,
+            item_id:        item.id,
+            cycle_id:       cycleId,
+            institution_id: institution.id,
+            importance,
+            competence,
+            priority
+          })
+      }
+    }
+
+    setSaving(false)
+    setSaved(true)
+    setTimeout(() => setSaved(false), 2000)
+  }
+    const domain = domains[currentDomain]
+    const domainItems = getDomainItems(domain.id)
+
+    for (const item of domainItems) {
+      const importance = ratings[`${item.id}_importance`]
+      const competence = ratings[`${item.id}_competence`]
+      const priority   = ratings[`${item.id}_priority`]
+
+      if (!importance || !competence || !priority) continue
+
       // Upsert response
       await supabase.from('responses').upsert({
         user_id:        currentUser.id,
