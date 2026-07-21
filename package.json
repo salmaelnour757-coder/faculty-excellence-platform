@@ -9,14 +9,11 @@
   },
   "license": "SEE LICENSE IN LICENSE",
   "private": true,
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
+  "workspaces": ["apps/*", "packages/*"],
   "scripts": {
-    "dev": "npm run dev --workspace=apps/web",
+    "dev":   "npm run dev   --workspace=apps/web",
     "build": "npm run build --workspace=apps/web",
-    "test": "npm test --workspaces"
+    "test":  "npm test --workspaces"
   },
   "repository": {
     "type": "git",

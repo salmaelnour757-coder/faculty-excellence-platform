@@ -12,7 +12,6 @@ A configurable, AI-powered faculty excellence and career development platform fo
 
 **Author:** Dr. Salma Elnour Rahma Mohamed  
 **ORCID:** 0000-0001-6439-5062  
-**Institution:** Gulf Medical University, Ajman, UAE  
 **Contact:** dr.salmaelnour@gmu.ac.ae  
 **Date of Creation:** July 2026  
 
@@ -22,7 +21,7 @@ This software, its architecture, design, methodology, scoring engine, configurat
 
 ## What Is the Faculty Excellence Platform?
 
-The Faculty Excellence Platform (FEP) is a configurable shell for faculty career development — a platform where the engine, logic, and architecture are fixed, but the content is entirely driven by institutional configuration. Any health professions education institution can deploy their own branded, framework-aligned version of the platform without modifying code.
+The Faculty Excellence Platform (FEP) is a configurable shell for faculty career development in health professions education. The engine, logic, and architecture are fixed. The content — competency framework, assessment instrument, pathways, branding, organisational structure — is entirely driven by institutional configuration. Any HPE institution can deploy their own branded, framework-aligned version without modifying code.
 
 ### The Faculty Journey
 
@@ -77,8 +76,7 @@ faculty-excellence-platform/
 │   ├── ai/               ← AI layer abstraction
 │   └── api/              ← REST API + webhooks
 ├── config/
-│   ├── default/          ← GMU default configuration
-│   └── templates/        ← Templates for new institutions
+│   └── example/          ← Example configuration for new institutions
 ├── docs/
 │   ├── architecture/     ← Technical documentation
 │   ├── ip/               ← IP registration documents
@@ -90,16 +88,19 @@ faculty-excellence-platform/
 
 ---
 
-## Founding Institution
+## Getting Started
 
-Gulf Medical University (GMU), Ajman, UAE — the platform was designed, developed, and validated at GMU. The GMU Faculty Competency Framework (GMU-FCF) and the GMU-FCDNAQ instrument ship as the default configuration.
+1. Clone the repository
+2. Copy `config/example/example-config.json` to your own config file
+3. Replace all values with your institution's details
+4. Run the onboarding wizard — it guides you through every setting
 
 ---
 
 ## Licence
 
-This project is licenced under the Business Source Licence 1.1.  
+Business Source Licence 1.1.  
 Commercial use requires a licence from Dr. Salma Elnour Rahma Mohamed.  
-Non-commercial and research use is permitted under the terms of the licence.  
+Non-commercial and research use is permitted under the licence terms.  
 See [LICENSE](./LICENSE) for full terms.
 

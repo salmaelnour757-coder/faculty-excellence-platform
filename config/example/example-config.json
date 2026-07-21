@@ -1,0 +1,135 @@
+{
+  "_meta": {
+    "schema_version": "1.0.0",
+    "description": "Example configuration — copy and replace all values with your institution details.",
+    "documentation": "https://facultyexcellence.io/docs/configuration"
+  },
+  "institution": {
+    "name": "Your Institution Name",
+    "short_name": "YIN",
+    "subdomain": "your-institution",
+    "country": "Your Country",
+    "city": "Your City",
+    "type": "university",
+    "website": "https://your-institution.edu",
+    "accreditation_bodies": [],
+    "branding": {
+      "primary": "#0D2B5E",
+      "accent":  "#1A7B8C",
+      "gold":    "#C9982A",
+      "background": "#F5F6FA",
+      "text":    "#1A1A1A"
+    }
+  },
+  "framework": {
+    "name": "Your Faculty Competency Framework",
+    "short_name": "FCF",
+    "version": "1.0",
+    "domains": [
+      {
+        "id": 1,
+        "code": "D1",
+        "name": "Domain Name",
+        "descriptor": "Domain descriptor",
+        "core_focus": "Key area 1 · Key area 2 · Key area 3",
+        "proficiency_levels": {
+          "1": "Novice", "2": "Developing", "3": "Proficient",
+          "4": "Advanced", "5": "Expert"
+        },
+        "items": [
+          { "id": "D1_1", "text": "Competency statement 1", "domain_id": 1 },
+          { "id": "D1_2", "text": "Competency statement 2", "domain_id": 1 },
+          { "id": "D1_3", "text": "Competency statement 3", "domain_id": 1 },
+          { "id": "D1_4", "text": "Competency statement 4", "domain_id": 1 }
+        ]
+      }
+    ]
+  },
+  "assessment": {
+    "instrument_name": "Your Needs Assessment Questionnaire",
+    "instrument_version": "1.0",
+    "scales": {
+      "importance": {
+        "label": "Importance",
+        "description": "How important is this competency to your current role?",
+        "min": 1, "max": 5,
+        "labels": { "1": "Not Important", "2": "Slightly Important", "3": "Moderately Important", "4": "Important", "5": "Very Important" }
+      },
+      "competence": {
+        "label": "Current Competence",
+        "description": "How would you rate your current level of competence?",
+        "min": 1, "max": 5,
+        "labels": { "1": "Novice", "2": "Basic", "3": "Competent", "4": "Proficient", "5": "Expert" }
+      },
+      "priority": {
+        "label": "Development Priority",
+        "description": "How urgently do you require development in this area?",
+        "min": 1, "max": 5,
+        "labels": { "1": "No Need", "2": "Low Priority", "3": "Moderate Priority", "4": "High Priority", "5": "Immediate Priority" }
+      }
+    },
+    "tni_bands": {
+      "low":      { "min": 0,  "max": 4,  "label": "Low Need",      "color": "#22C55E" },
+      "moderate": { "min": 5,  "max": 8,  "label": "Moderate Need",  "color": "#F59E0B" },
+      "high":     { "min": 9,  "max": 12, "label": "High Need",      "color": "#F97316" },
+      "critical": { "min": 13, "max": 20, "label": "Critical Need",  "color": "#EF4444" }
+    },
+    "reassessment_cycle_years": 2
+  },
+  "career_tracks": [
+    { "id": "A", "name": "New Faculty",    "label": "Track A", "years_range": "Year 1",    "description": "First year mandatory induction", "mandatory_pathways": [], "color": "#1A7B8C" },
+    { "id": "B", "name": "Early Career",   "label": "Track B", "years_range": "Years 2-5", "description": "Advanced practice development",  "mandatory_pathways": [], "color": "#0D2B5E" },
+    { "id": "C", "name": "Mid Career",     "label": "Track C", "years_range": "Years 6-12","description": "Leadership and scholarship",       "mandatory_pathways": [], "color": "#C9982A" },
+    { "id": "D", "name": "Senior Faculty", "label": "Track D", "years_range": "Years 12+", "description": "Institutional leadership",         "mandatory_pathways": [], "color": "#6B1A6B" }
+  ],
+  "pathways": [
+    {
+      "id": "P1", "code": "P1",
+      "name": "Pathway Name",
+      "domain_ids": [1],
+      "description": "Pathway description",
+      "modules": ["Module 1", "Module 2", "Module 3"],
+      "format": "blended",
+      "duration_hours": 30,
+      "certificate": "Certificate Title",
+      "cpd_credits": 30,
+      "career_tracks": ["A", "B"],
+      "is_flagship": false
+    }
+  ],
+  "organisational_structure": {
+    "colleges": [
+      { "id": "college_1", "name": "College Name", "code": "COL" }
+    ],
+    "ranks": [
+      { "id": "prof",       "name": "Professor",           "order": 5 },
+      { "id": "assoc_prof", "name": "Associate Professor", "order": 4 },
+      { "id": "asst_prof",  "name": "Assistant Professor", "order": 3 },
+      { "id": "lecturer",   "name": "Lecturer",            "order": 2 },
+      { "id": "clinical",   "name": "Clinical Faculty",    "order": 1 }
+    ]
+  },
+  "policy": {
+    "appraisal_linked": false,
+    "idp_approval_required": true,
+    "idp_approval_by": "supervisor",
+    "reassessment_cycle_years": 2,
+    "promotion_criteria_linked": true,
+    "portfolio_ownership": "faculty",
+    "portfolio_institution_access": "view_export",
+    "mandatory_participation": true,
+    "minimum_cpd_credits_per_year": 20
+  },
+  "evidence_types": [
+    { "id": "certificate",         "name": "Certificate / Award",       "icon": "award"     },
+    { "id": "publication",         "name": "Publication",               "icon": "book-open" },
+    { "id": "presentation",        "name": "Conference Presentation",   "icon": "mic"       },
+    { "id": "peer_observation",    "name": "Peer Observation Report",   "icon": "users"     },
+    { "id": "student_feedback",    "name": "Student Feedback Report",   "icon": "star"      },
+    { "id": "workshop_attendance", "name": "Workshop Attendance",       "icon": "calendar"  },
+    { "id": "reflection",          "name": "Reflective Journal Entry",  "icon": "edit"      },
+    { "id": "project",             "name": "Project / Initiative",      "icon": "briefcase" },
+    { "id": "mentoring_log",       "name": "Mentoring Log",             "icon": "heart"     },
+    { "id": "other",               "name": "Other Evidence",            "icon": "file"      }
+  ]
+}

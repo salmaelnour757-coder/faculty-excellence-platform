@@ -1,5 +1,4 @@
 # Faculty Excellence Platform — Architecture Overview
-
 © 2026 Dr. Salma Elnour Rahma Mohamed. All rights reserved.
 
 ## Seven Layers
@@ -15,13 +14,14 @@
 | 7 — Integration | SSO, HR systems, LMS, API, webhooks |
 
 ## Scoring Engine
-
 Gap Score = Importance − Competence
 TNI = Gap Score × Development Priority
+TNI 0–4: Low | 5–8: Moderate | 9–12: High | 13–20: Critical
 
-TNI 0–4: Low Need | 5–8: Moderate | 9–12: High | 13–20: Critical
+## Configuration
+Every institution configures the platform via a JSON file.
+Start from: config/example/example-config.json
 
-## Configuration Model
-
-Every institution configures the platform via a JSON configuration object.
-Default GMU configuration: config/default/gmu-config.json
+## Multi-Tenancy
+Supabase Row-Level Security isolates each institution's data completely.
+Each institution gets their own subdomain: institution.facultyexcellence.io
