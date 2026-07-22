@@ -621,7 +621,8 @@ function PathwaysSettings({ institution }) {
   const [newPathway, setNewPathway] = useState(false)
   const [newForm, setNewForm] = useState({
     name:'', description:'', cpd_credits:20, duration_hours:20,
-    certificate_title:'', career_tracks:[], domain_codes:[], is_flagship:false
+    certificate_title:'', career_tracks:[], domain_codes:[], is_flagship:false,
+    requires_approval:false
   })
 
   useEffect(() => { loadPathways() }, [])
@@ -642,6 +643,7 @@ function PathwaysSettings({ institution }) {
       duration_hours:    p.duration_hours,
       certificate_title: p.certificate_title,
       is_flagship:       p.is_flagship,
+      requires_approval: p.requires_approval,
     }).eq('id', p.id)
     setSaving(false)
     setEditing(null)
@@ -669,6 +671,7 @@ function PathwaysSettings({ institution }) {
       career_tracks:     newForm.career_tracks,
       domain_codes:      newForm.domain_codes,
       is_flagship:       newForm.is_flagship,
+      requires_approval: newForm.requires_approval,
       is_active:         true,
     })
     setSaving(false)
@@ -727,6 +730,12 @@ function PathwaysSettings({ institution }) {
                 </Field>
               </div>
             </div>
+            <label style={{ display:'flex', alignItems:'center', gap:6,
+                            fontSize:13, color:'#0D2B5E', cursor:'pointer', marginBottom:14 }}>
+              <input type="checkbox" checked={newForm.requires_approval}
+                onChange={e => setNewForm(f=>({...f,requires_approval:e.target.checked}))} />
+              Requires approval to enrol
+            </label>
             <button onClick={addPathway} disabled={saving}
               style={{ padding:'9px 22px', borderRadius:8, border:'none',
                        background:'#0D2B5E', color:'white',
@@ -776,7 +785,7 @@ function PathwaysSettings({ institution }) {
                     </Field>
                   </div>
                 </div>
-                <div style={{ display:'flex', gap:8, alignItems:'center' }}>
+                <div style={{ display:'flex', gap:8, alignItems:'center', flexWrap:'wrap' }}>
                   <button onClick={() => savePathway(p)} disabled={saving}
                     style={{ padding:'8px 20px', borderRadius:8, border:'none',
                              background:'#0D2B5E', color:'white',
@@ -790,12 +799,19 @@ function PathwaysSettings({ institution }) {
                     Cancel
                   </button>
                   <label style={{ display:'flex', alignItems:'center', gap:6,
-                                  fontSize:13, color:'#0D2B5E', cursor:'pointer',
-                                  marginLeft:'auto' }}>
+                                  fontSize:13, color:'#0D2B5E', cursor:'pointer' }}>
                     <input type="checkbox" checked={p.is_flagship}
                       onChange={e => setPathways(ps => ps.map(x =>
                         x.id === p.id ? {...x, is_flagship:e.target.checked} : x))} />
                     Flagship pathway
+                  </label>
+                  <label style={{ display:'flex', alignItems:'center', gap:6,
+                                  fontSize:13, color:'#0D2B5E', cursor:'pointer',
+                                  marginLeft:'auto' }}>
+                    <input type="checkbox" checked={p.requires_approval}
+                      onChange={e => setPathways(ps => ps.map(x =>
+                        x.id === p.id ? {...x, requires_approval:e.target.checked} : x))} />
+                    Requires approval
                   </label>
                 </div>
               </div>
@@ -806,12 +822,17 @@ function PathwaysSettings({ institution }) {
                 <span style={{ fontSize:20 }}>{icons[p.code] || '🎓'}</span>
                 <div style={{ flex:1 }}>
                   <div style={{ fontWeight:700, color:'#0D2B5E', fontSize:14,
-                                display:'flex', alignItems:'center', gap:8 }}>
+                                display:'flex', alignItems:'center', gap:8, flexWrap:'wrap' }}>
                     {p.name}
                     {p.is_flagship && (
                       <span style={{ background:'#C9982A', color:'#0D2B5E',
                                      fontSize:11, padding:'2px 8px',
                                      borderRadius:8, fontWeight:700 }}>⭐ Flagship</span>
+                    )}
+                    {p.requires_approval && (
+                      <span style={{ background:'#FEF9C3', color:'#92400E',
+                                     fontSize:11, padding:'2px 8px',
+                                     borderRadius:8, fontWeight:700 }}>🔒 Approval required</span>
                     )}
                   </div>
                   <div style={{ fontSize:12, color:'#64748B', marginTop:2 }}>
