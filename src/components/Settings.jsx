@@ -57,9 +57,9 @@ export default function Settings({ institution, currentUser, onUpdate }) {
         {section === 'framework'   && <FrameworkSettings   institution={institution} />}
         {section === 'instrument'  && <InstrumentSettings  institution={institution} />}
         {section === 'pathways'    && <PathwaysSettings    institution={institution} />}
-        {section === 'tracks'      && <TracksSettings      institution={institution} />}
+        {section === 'tracks'      && <TracksSettings      institution={institution} onUpdate={onUpdate} />}
         {section === 'roles'       && <RolesSettings />}
-        {section === 'comms'       && <CommsSettings       institution={institution} />}
+        {section === 'comms'       && <CommsSettings       institution={institution} onUpdate={onUpdate} />}
         {section === 'policy'      && <PolicySettings      institution={institution} onUpdate={onUpdate} />}
         {section === 'users'       && <UsersSettings       institution={institution} />}
       </div>
@@ -222,6 +222,8 @@ function InstitutionSettings({ institution, onUpdate }) {
       setSaved('Institution profile saved successfully.')
       if (onUpdate) onUpdate(data)
       setTimeout(() => setSaved(''), 3000)
+    } else {
+      console.error('Institution save failed:', error)
     }
   }
 
@@ -306,7 +308,6 @@ function InstitutionSettings({ institution, onUpdate }) {
           ))}
         </div>
 
-        {/* Live preview */}
         <div style={{ borderRadius:10, overflow:'hidden', border:'1px solid #DDE3EF' }}>
           <div style={{ background:form.branding.primary, padding:'16px 20px' }}>
             <div style={{ color:form.branding.gold, fontWeight:800, fontSize:16 }}>
@@ -362,15 +363,19 @@ function FrameworkSettings({ institution }) {
 
   async function saveDomain(domain) {
     setSaving(true)
-    await supabase.from('domains').update({
+    const { error } = await supabase.from('domains').update({
       name:       domain.name,
       descriptor: domain.descriptor,
       core_focus: domain.core_focus,
     }).eq('id', domain.id)
     setSaving(false)
     setEditing(null)
-    setSaved('Domain saved.')
-    setTimeout(() => setSaved(''), 3000)
+    if (!error) {
+      setSaved('Domain saved.')
+      setTimeout(() => setSaved(''), 3000)
+    } else {
+      console.error('Domain save failed:', error)
+    }
     loadDomains()
   }
 
@@ -482,11 +487,15 @@ function InstrumentSettings({ institution }) {
 
   async function saveItem(item) {
     setSaving(true)
-    await supabase.from('items').update({ item_text: item.item_text }).eq('id', item.id)
+    const { error } = await supabase.from('items').update({ item_text: item.item_text }).eq('id', item.id)
     setSaving(false)
     setEditing(null)
-    setSaved('Item saved.')
-    setTimeout(() => setSaved(''), 3000)
+    if (!error) {
+      setSaved('Item saved.')
+      setTimeout(() => setSaved(''), 3000)
+    } else {
+      console.error('Item save failed:', error)
+    }
     loadData()
   }
 
@@ -626,7 +635,7 @@ function PathwaysSettings({ institution }) {
 
   async function savePathway(p) {
     setSaving(true)
-    await supabase.from('pathways').update({
+    const { error } = await supabase.from('pathways').update({
       name:              p.name,
       description:       p.description,
       cpd_credits:       p.cpd_credits,
@@ -636,8 +645,12 @@ function PathwaysSettings({ institution }) {
     }).eq('id', p.id)
     setSaving(false)
     setEditing(null)
-    setSaved('Pathway saved.')
-    setTimeout(() => setSaved(''), 3000)
+    if (!error) {
+      setSaved('Pathway saved.')
+      setTimeout(() => setSaved(''), 3000)
+    } else {
+      console.error('Pathway save failed:', error)
+    }
     loadPathways()
   }
 
@@ -645,7 +658,7 @@ function PathwaysSettings({ institution }) {
     if (!newForm.name) return
     setSaving(true)
     const code = 'P' + (pathways.length + 1)
-    await supabase.from('pathways').insert({
+    const { error } = await supabase.from('pathways').insert({
       institution_id:    institution.id,
       code,
       name:              newForm.name,
@@ -660,8 +673,12 @@ function PathwaysSettings({ institution }) {
     })
     setSaving(false)
     setNewPathway(false)
-    setSaved('New pathway added.')
-    setTimeout(() => setSaved(''), 3000)
+    if (!error) {
+      setSaved('New pathway added.')
+      setTimeout(() => setSaved(''), 3000)
+    } else {
+      console.error('Add pathway failed:', error)
+    }
     loadPathways()
   }
 
@@ -673,7 +690,6 @@ function PathwaysSettings({ institution }) {
       <SettingsCard title="Pathways Manager"
         subtitle="Configure your faculty development learning pathways">
 
-        {/* Add new pathway button */}
         <button onClick={() => setNewPathway(!newPathway)}
           style={{ marginBottom:16, padding:'9px 20px', borderRadius:8, border:'none',
                    background: newPathway ? '#64748B' : '#0D2B5E',
@@ -681,7 +697,6 @@ function PathwaysSettings({ institution }) {
           {newPathway ? 'Cancel' : '+ Add New Pathway'}
         </button>
 
-        {/* New pathway form */}
         {newPathway && (
           <div style={{ padding:16, borderRadius:10, border:'2px solid #1A7B8C',
                         background:'#EDF6F8', marginBottom:16 }}>
@@ -821,22 +836,37 @@ function PathwaysSettings({ institution }) {
 
 // ── 5. Career Tracks ──────────────────────────────────────────────────────────
 
-function TracksSettings({ institution }) {
-  const [tracks, setTracks] = useState([
+function TracksSettings({ institution, onUpdate }) {
+  const defaultTracks = [
     { id:'A', name:'New Faculty',    years:'Year 1',    color:'#1A7B8C', desc:'Mandatory induction and foundation development' },
     { id:'B', name:'Early Career',   years:'Years 2–5', color:'#0D2B5E', desc:'Advanced practice and research introduction' },
     { id:'C', name:'Mid Career',     years:'Years 6–12',color:'#C9982A', desc:'Leadership and scholarship development' },
     { id:'D', name:'Senior Faculty', years:'Years 12+', color:'#6B1A6B', desc:'Institutional leadership and mentorship' },
-  ])
-  const [saved, setSaved] = useState('')
+  ]
+  const [tracks, setTracks] = useState(institution?.career_tracks || defaultTracks)
+  const [saving, setSaving] = useState(false)
+  const [saved,  setSaved]  = useState('')
 
-  function saveTrack(id, field, value) {
+  function updateTrack(id, field, value) {
     setTracks(ts => ts.map(t => t.id === id ? { ...t, [field]:value } : t))
   }
 
-  function handleSave() {
-    setSaved('Career tracks saved.')
-    setTimeout(() => setSaved(''), 3000)
+  async function save() {
+    setSaving(true)
+    const { data, error } = await supabase
+      .from('institutions')
+      .update({ career_tracks: tracks })
+      .eq('id', institution.id)
+      .select()
+      .single()
+    setSaving(false)
+    if (!error) {
+      setSaved('Career tracks saved.')
+      if (onUpdate) onUpdate(data)
+      setTimeout(() => setSaved(''), 3000)
+    } else {
+      console.error('Career tracks save failed:', error)
+    }
   }
 
   return (
@@ -844,7 +874,7 @@ function TracksSettings({ institution }) {
       <SaveBanner message={saved} />
       <SettingsCard title="Career Development Tracks"
         subtitle="Configure the four career-stage development tracks"
-        onSave={handleSave}>
+        onSave={save} saving={saving}>
         {tracks.map(t => (
           <div key={t.id} style={{ display:'grid', gap:10, padding:'16px 0',
                                     borderBottom:'1px solid #F1F5F9',
@@ -857,16 +887,16 @@ function TracksSettings({ institution }) {
             </div>
             <Field label="Track Name">
               <Inp value={t.name}
-                onChange={e => saveTrack(t.id, 'name', e.target.value)} />
+                onChange={e => updateTrack(t.id, 'name', e.target.value)} />
             </Field>
             <Field label="Year Range">
               <Inp value={t.years}
-                onChange={e => saveTrack(t.id, 'years', e.target.value)} />
+                onChange={e => updateTrack(t.id, 'years', e.target.value)} />
             </Field>
             <div style={{ gridColumn:'2/-1' }}>
               <Field label="Description">
                 <Inp value={t.desc}
-                  onChange={e => saveTrack(t.id, 'desc', e.target.value)} />
+                  onChange={e => updateTrack(t.id, 'desc', e.target.value)} />
               </Field>
             </div>
           </div>
@@ -960,8 +990,8 @@ function RolesSettings() {
 
 // ── 7. Communication Settings ─────────────────────────────────────────────────
 
-function CommsSettings({ institution }) {
-  const [form, setForm] = useState({
+function CommsSettings({ institution, onUpdate }) {
+  const defaults = {
     emailjs_service_id:  'service_mws5m4r',
     emailjs_template_id: 'template_csvofcd',
     emailjs_public_key:  'RRDUQ9_AeAaPDWd9K',
@@ -973,14 +1003,29 @@ function CommsSettings({ institution }) {
     auto_workshop_reminder: true,
     auto_certificate:    true,
     auto_overdue_alert:  true,
-  })
+  }
+  const [form, setForm] = useState(institution?.comms_settings || defaults)
+  const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState('')
 
   const set = (k, v) => setForm(f => ({ ...f, [k]:v }))
 
-  function handleSave() {
-    setSaved('Communication settings saved.')
-    setTimeout(() => setSaved(''), 3000)
+  async function save() {
+    setSaving(true)
+    const { data, error } = await supabase
+      .from('institutions')
+      .update({ comms_settings: form })
+      .eq('id', institution.id)
+      .select()
+      .single()
+    setSaving(false)
+    if (!error) {
+      setSaved('Communication settings saved.')
+      if (onUpdate) onUpdate(data)
+      setTimeout(() => setSaved(''), 3000)
+    } else {
+      console.error('Comms settings save failed:', error)
+    }
   }
 
   return (
@@ -988,7 +1033,7 @@ function CommsSettings({ institution }) {
       <SaveBanner message={saved} />
       <SettingsCard title="Email Service Configuration"
         subtitle="EmailJS settings for sending platform emails"
-        onSave={handleSave}>
+        onSave={save} saving={saving}>
         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
           <Field label="EmailJS Service ID">
             <Inp value={form.emailjs_service_id}
@@ -1018,7 +1063,7 @@ function CommsSettings({ institution }) {
 
       <SettingsCard title="Automatic Email Triggers"
         subtitle="Toggle which emails send automatically without admin intervention"
-        onSave={handleSave}>
+        onSave={save} saving={saving}>
         {[
           { key:'auto_welcome',             label:'Welcome email on registration',         desc:'Sent when a new user completes registration'             },
           { key:'auto_assessment_reminder', label:'Assessment reminder (7 days before due)',desc:'Sent automatically 7 days before assessment deadline'   },
@@ -1064,6 +1109,8 @@ function PolicySettings({ institution, onUpdate }) {
       setSaved('Policy settings saved.')
       if (onUpdate) onUpdate(data)
       setTimeout(() => setSaved(''), 3000)
+    } else {
+      console.error('Policy save failed:', error)
     }
   }
 
@@ -1162,10 +1209,14 @@ function UsersSettings({ institution }) {
 
   async function updateRole(userId, role) {
     setSaving(userId)
-    await supabase.from('users').update({ role }).eq('id', userId)
+    const { error } = await supabase.from('users').update({ role }).eq('id', userId)
     setSaving(null)
-    setSaved('Role updated.')
-    setTimeout(() => setSaved(''), 3000)
+    if (!error) {
+      setSaved('Role updated.')
+      setTimeout(() => setSaved(''), 3000)
+    } else {
+      console.error('Role update failed:', error)
+    }
     loadUsers()
   }
 

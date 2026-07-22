@@ -156,3 +156,27 @@ export default function Pathways({ institution, currentUser }) {
     </div>
   )
 }
+await supabase.from('pathways').insert({
+  institution_id:    institution.id,
+  code,
+  name:              newForm.name,
+  description:       newForm.description,
+  cpd_credits:       newForm.cpd_credits,
+  duration_hours:    newForm.duration_hours,
+  certificate_title: newForm.certificate_title,
+  career_tracks:     newForm.career_tracks,
+  domain_codes:      newForm.domain_codes,
+  is_flagship:       newForm.is_flagship,
+  requires_approval: newForm.requires_approval,
+  is_active:         true,
+})
+
+await supabase.from('pathways').update({
+  name:              p.name,
+  description:       p.description,
+  cpd_credits:       p.cpd_credits,
+  duration_hours:    p.duration_hours,
+  certificate_title: p.certificate_title,
+  is_flagship:       p.is_flagship,
+  requires_approval: p.requires_approval,
+}).eq('id', p.id)
